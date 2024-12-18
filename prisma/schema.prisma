@@ -1,0 +1,174 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Marca {
+    id String @id @db.VarChar(20)
+    modelo Modelo []
+
+    @@map("marca")
+}
+
+model Modelo {
+    nome String @id @db.VarChar(20) 
+    ano Int
+    versao String @db.VarChar(20)
+    combustivel Combustivel
+    cambio Cambio
+    qtd_lugares Int
+    cv Int
+    cc Int
+    portas Int?
+    idMarca Marca @relation(fields: [id_marca], references: [id])
+    id_marca String @unique
+    veiculo Veiculo []
+
+    @@map("modelo")
+}
+
+enum Combustivel {
+    g 
+    a 
+    d 
+    e 
+    h 
+    f
+
+    @@map("combustivel")
+}
+
+enum Cambio {
+    m 
+    a 
+    e 
+}
+
+model Acessorios {
+    descricao String @id @db.VarChar(100)
+    aceVeiculo AceVeiculo []
+
+    @@map("acessorios")
+}
+
+model AceVeiculo{
+    acessorio Acessorios @relation(fields: [id_Acessorio],references: [descricao])
+    id_Acessorio String
+    veiculo Veiculo @relation (fields: [id_Veiculo],references: [id])
+    id_Veiculo Int
+
+    @@id ([id_Acessorio,id_Veiculo])
+    @@map("ace_veiculo")
+}
+
+model Veiculo {
+    id Int @id @default(autoincrement())
+    placa String @db.VarChar(7)
+    km Int
+    gnv Boolean
+    cor String @db.VarChar(20)
+    novo Boolean
+    id_modelo String @db.VarChar(20) 
+    modelo Modelo @relation(fields: [id_modelo], references: [nome])
+    aceVeiculo AceVeiculo []
+    foto_veiculo FotoVeiculo []
+    anuncio Anuncio?
+
+    @@map("veiculo")
+}
+
+model FotoVeiculo {
+    link String @id
+    veiculo Veiculo @relation(fields: [id_veiculo], references: [id])
+    id_veiculo Int
+
+    @@map("foto_veiculo")
+}
+
+model Estado {
+    uf String @id @db.VarChar(2)
+    nome String @db.VarChar(30)
+    cidade Cidade []
+
+    @@map("estado")
+}
+
+model Cidade {
+    id Int @id @default(autoincrement())
+    nome String @db.VarChar(100)
+    estado Estado @relation(fields: [id_estado], references: [uf])
+    id_estado String @db.VarChar(2)
+    anuncio Anuncio?
+
+    @@map("cidade")
+}
+
+model Usuario {
+    cpf String @id @db.VarChar(11)
+    nome String @db.VarChar(50)
+    tipo Tipo 
+    email String @db.VarChar(100)
+    senha String @db.VarChar(100)
+
+    comprador InteresseCompra[]
+    anuncio Anuncio[]
+
+    @@map("usuario")
+}
+
+enum Tipo {
+    adm
+    com
+}
+
+model Anuncio {
+    id_veiculo Int @unique
+    id_usuario String @unique
+    id_cidade Int  @unique
+    veiculo Veiculo @relation(fields: [id_veiculo], references: [id])
+    usuario Usuario @relation(fields: [id_usuario], references: [cpf])
+    cidade Cidade @relation(fields: [id_cidade], references: [id])
+
+    descricao String
+    preco Float
+    dt_criacao DateTime @default(now())
+    aprovado Boolean @default(false)
+    compra InteresseCompra[]
+    
+    telefone_ddd String @unique
+    telefone_numero String @unique
+    telefone Telefone @relation(fields: [telefone_ddd,telefone_numero], references: [ddd,numero])
+
+    @@id ([id_veiculo,id_cidade,id_usuario])
+    @@map("anuncio")
+}
+
+model InteresseCompra {
+    cpf_comprador String @db.VarChar(11)
+    id_veiculo Int
+    comprador Usuario @relation(fields: [cpf_comprador],references: [cpf])
+    anuncioVeiculo Anuncio @relation(fields: [id_veiculo], references: [id_veiculo])
+    
+    @@id([id_veiculo,cpf_comprador])
+    @@map("interesse_compra")
+}
+
+model Telefone {
+    ddd String @db.VarChar(2)
+    numero String @db.VarChar(9)
+    anuncio Anuncio[]
+    veiculo_id Int @unique
+
+    @@id([ddd,numero])
+    @@map("telefone")
+}
