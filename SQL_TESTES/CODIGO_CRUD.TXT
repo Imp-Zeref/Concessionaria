@@ -1,0 +1,32 @@
+
+-- CREATE
+INSERT INTO marca (id) VALUES ('HONDA');
+
+-- SELECT
+SELECT * FROM marca;
+
+-- UPDATE E SELECT
+UPDATE marca SET id = 'FIAT' WHERE id = 'HONDA';
+SELECT * FROM marca;
+
+-- DELETE E SELECT
+
+DELETE FROM marca WHERE id = 'FIAT';
+SELECT * FROM marca;
+
+
+-- CREATE 
+INSERT INTO usuario (cpf, nome, tipo, email, senha)
+VALUES ('12345678900', 'Gustavo', 'adm', 'gustavo@teste.com', 'senha123');
+
+-- SELECT
+SELECT * FROM usuario;
+
+-- UPDATE
+UPDATE usuario SET email = 'gustavo.2@teste.com' WHERE cpf = '12345678900';
+SELECT * FROM usuario;
+
+-- DELETE
+DELETE FROM usuario WHERE cpf = '12345678900';
+SELECT * FROM usuario;
+

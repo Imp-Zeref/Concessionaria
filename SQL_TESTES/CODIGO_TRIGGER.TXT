@@ -1,0 +1,17 @@
+CREATE OR REPLACE FUNCTION auto_aprovar_anuncio()
+RETURNS TRIGGER AS $$
+DECLARE
+    user_tipo "Tipo";
+BEGIN
+    SELECT tipo INTO user_tipo FROM usuario WHERE cpf = NEW.id_usuario;
+    IF user_tipo = 'adm' THEN
+        NEW.aprovado = true;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_auto_aprovar
+BEFORE INSERT ON anuncio
+FOR EACH ROW
+EXECUTE FUNCTION auto_aprovar_anuncio();
