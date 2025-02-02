@@ -53,24 +53,6 @@ enum Cambio {
     a 
     e 
 }
-
-model Acessorios {
-    descricao String @id @db.VarChar(100)
-    aceVeiculo AceVeiculo []
-
-    @@map("acessorios")
-}
-
-model AceVeiculo{
-    acessorio Acessorios @relation(fields: [id_Acessorio],references: [descricao])
-    id_Acessorio String
-    veiculo Veiculo @relation (fields: [id_Veiculo],references: [id])
-    id_Veiculo Int
-
-    @@id ([id_Acessorio,id_Veiculo])
-    @@map("ace_veiculo")
-}
-
 model Veiculo {
     id Int @id @default(autoincrement())
     placa String @db.VarChar(7)
@@ -80,19 +62,9 @@ model Veiculo {
     novo Boolean
     id_modelo String @db.VarChar(20) 
     modelo Modelo @relation(fields: [id_modelo], references: [nome])
-    aceVeiculo AceVeiculo []
-    foto_veiculo FotoVeiculo []
     anuncio Anuncio?
 
     @@map("veiculo")
-}
-
-model FotoVeiculo {
-    link String @id
-    veiculo Veiculo @relation(fields: [id_veiculo], references: [id])
-    id_veiculo Int
-
-    @@map("foto_veiculo")
 }
 
 model Estado {
@@ -144,6 +116,7 @@ model Anuncio {
     dt_criacao DateTime @default(now())
     aprovado Boolean @default(false)
     compra InteresseCompra[]
+    foto String @unique
     
     telefone_ddd String @unique
     telefone_numero String @unique
