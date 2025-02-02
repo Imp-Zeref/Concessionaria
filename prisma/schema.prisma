@@ -113,15 +113,12 @@ model Anuncio {
 
     descricao String
     preco Float
+    telefone String @db.VarChar(11)
     dt_criacao DateTime @default(now())
     aprovado Boolean @default(false)
     compra InteresseCompra[]
     foto String @unique
     
-    telefone_ddd String @unique
-    telefone_numero String @unique
-    telefone Telefone @relation(fields: [telefone_ddd,telefone_numero], references: [ddd,numero])
-
     @@id ([id_veiculo,id_cidade,id_usuario])
     @@map("anuncio")
 }
@@ -134,14 +131,4 @@ model InteresseCompra {
     
     @@id([id_veiculo,cpf_comprador])
     @@map("interesse_compra")
-}
-
-model Telefone {
-    ddd String @db.VarChar(2)
-    numero String @db.VarChar(9)
-    anuncio Anuncio[]
-    veiculo_id Int @unique
-
-    @@id([ddd,numero])
-    @@map("telefone")
 }
