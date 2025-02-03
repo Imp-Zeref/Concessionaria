@@ -113,6 +113,7 @@ model Anuncio {
 
     descricao String
     preco Float
+    telefone String @db.VarChar(11)
     dt_criacao DateTime @default(now())
     aprovado Boolean @default(false)
     compra InteresseCompra[]
