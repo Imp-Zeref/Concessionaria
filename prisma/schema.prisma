@@ -105,7 +105,7 @@ enum Tipo {
 
 model Anuncio {
     id_veiculo Int @unique
-    id_usuario String @unique
+    id_usuario String
     id_cidade Int  @unique
     veiculo Veiculo @relation(fields: [id_veiculo], references: [id])
     usuario Usuario @relation(fields: [id_usuario], references: [cpf])
@@ -118,30 +118,17 @@ model Anuncio {
     compra InteresseCompra[]
     foto String @unique
     
-    telefone_ddd String @unique
-    telefone_numero String @unique
-    telefone Telefone @relation(fields: [telefone_ddd,telefone_numero], references: [ddd,numero])
+    telefone_ddd String
+    telefone_numero String
 
     @@id ([id_veiculo,id_cidade,id_usuario])
     @@map("anuncio")
 }
 
 model InteresseCompra {
-    cpf_comprador String @db.VarChar(11)
-    id_veiculo Int
-    comprador Usuario @relation(fields: [cpf_comprador],references: [cpf])
+    id_veiculo Int @id
+    cpf_interessado String @db.VarChar(11)
+    interessado Usuario @relation(fields: [cpf_interessado], references: [cpf])
     anuncioVeiculo Anuncio @relation(fields: [id_veiculo], references: [id_veiculo])
-    
-    @@id([id_veiculo,cpf_comprador])
     @@map("interesse_compra")
-}
-
-model Telefone {
-    ddd String @db.VarChar(2)
-    numero String @db.VarChar(9)
-    anuncio Anuncio[]
-    veiculo_id Int @unique
-
-    @@id([ddd,numero])
-    @@map("telefone")
 }
