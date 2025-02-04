@@ -16,6 +16,7 @@ CREATE TABLE "marca" (
 
 -- CreateTable
 CREATE TABLE "modelo" (
+    "id" INTEGER NOT NULL,
     "nome" VARCHAR(20) NOT NULL,
     "ano" INTEGER NOT NULL,
     "versao" VARCHAR(20) NOT NULL,
@@ -27,20 +28,7 @@ CREATE TABLE "modelo" (
     "portas" INTEGER,
     "id_marca" TEXT NOT NULL,
 
-    CONSTRAINT "modelo_pkey" PRIMARY KEY ("nome")
-);
-
--- CreateTable
-CREATE TABLE "veiculo" (
-    "id" SERIAL NOT NULL,
-    "placa" VARCHAR(7) NOT NULL,
-    "km" INTEGER NOT NULL,
-    "gnv" BOOLEAN NOT NULL,
-    "cor" VARCHAR(20) NOT NULL,
-    "novo" BOOLEAN NOT NULL,
-    "id_modelo" VARCHAR(20) NOT NULL,
-
-    CONSTRAINT "veiculo_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "modelo_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -73,7 +61,7 @@ CREATE TABLE "usuario" (
 
 -- CreateTable
 CREATE TABLE "anuncio" (
-    "id_veiculo" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "id_usuario" TEXT NOT NULL,
     "id_cidade" INTEGER NOT NULL,
     "descricao" TEXT NOT NULL,
@@ -82,29 +70,26 @@ CREATE TABLE "anuncio" (
     "dt_criacao" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "aprovado" BOOLEAN NOT NULL DEFAULT false,
     "foto" TEXT NOT NULL,
+    "placa" VARCHAR(7) NOT NULL,
+    "km" INTEGER NOT NULL,
+    "gnv" BOOLEAN NOT NULL,
+    "cor" VARCHAR(20) NOT NULL,
+    "novo" BOOLEAN NOT NULL,
+    "id_modelo" INTEGER NOT NULL,
 
-    CONSTRAINT "anuncio_pkey" PRIMARY KEY ("id_veiculo","id_cidade","id_usuario")
+    CONSTRAINT "anuncio_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "interesse_compra" (
-    "cpf_comprador" VARCHAR(11) NOT NULL,
-    "id_veiculo" INTEGER NOT NULL,
+    "id_anuncio" INTEGER NOT NULL,
+    "cpf_interessado" VARCHAR(11) NOT NULL,
 
-    CONSTRAINT "interesse_compra_pkey" PRIMARY KEY ("id_veiculo","cpf_comprador")
+    CONSTRAINT "interesse_compra_pkey" PRIMARY KEY ("id_anuncio","cpf_interessado")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "modelo_id_marca_key" ON "modelo"("id_marca");
-
--- CreateIndex
-CREATE UNIQUE INDEX "anuncio_id_veiculo_key" ON "anuncio"("id_veiculo");
-
--- CreateIndex
-CREATE UNIQUE INDEX "anuncio_id_usuario_key" ON "anuncio"("id_usuario");
-
--- CreateIndex
-CREATE UNIQUE INDEX "anuncio_id_cidade_key" ON "anuncio"("id_cidade");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "anuncio_foto_key" ON "anuncio"("foto");
@@ -113,13 +98,7 @@ CREATE UNIQUE INDEX "anuncio_foto_key" ON "anuncio"("foto");
 ALTER TABLE "modelo" ADD CONSTRAINT "modelo_id_marca_fkey" FOREIGN KEY ("id_marca") REFERENCES "marca"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "veiculo" ADD CONSTRAINT "veiculo_id_modelo_fkey" FOREIGN KEY ("id_modelo") REFERENCES "modelo"("nome") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "cidade" ADD CONSTRAINT "cidade_id_estado_fkey" FOREIGN KEY ("id_estado") REFERENCES "estado"("uf") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "anuncio" ADD CONSTRAINT "anuncio_id_veiculo_fkey" FOREIGN KEY ("id_veiculo") REFERENCES "veiculo"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "anuncio" ADD CONSTRAINT "anuncio_id_usuario_fkey" FOREIGN KEY ("id_usuario") REFERENCES "usuario"("cpf") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -128,7 +107,10 @@ ALTER TABLE "anuncio" ADD CONSTRAINT "anuncio_id_usuario_fkey" FOREIGN KEY ("id_
 ALTER TABLE "anuncio" ADD CONSTRAINT "anuncio_id_cidade_fkey" FOREIGN KEY ("id_cidade") REFERENCES "cidade"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "interesse_compra" ADD CONSTRAINT "interesse_compra_cpf_comprador_fkey" FOREIGN KEY ("cpf_comprador") REFERENCES "usuario"("cpf") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "anuncio" ADD CONSTRAINT "anuncio_id_modelo_fkey" FOREIGN KEY ("id_modelo") REFERENCES "modelo"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "interesse_compra" ADD CONSTRAINT "interesse_compra_id_veiculo_fkey" FOREIGN KEY ("id_veiculo") REFERENCES "anuncio"("id_veiculo") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "interesse_compra" ADD CONSTRAINT "interesse_compra_cpf_interessado_fkey" FOREIGN KEY ("cpf_interessado") REFERENCES "usuario"("cpf") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "interesse_compra" ADD CONSTRAINT "interesse_compra_id_anuncio_fkey" FOREIGN KEY ("id_anuncio") REFERENCES "anuncio"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

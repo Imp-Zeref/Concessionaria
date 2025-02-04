@@ -21,7 +21,8 @@ model Marca {
 }
 
 model Modelo {
-    nome String @id @db.VarChar(20) 
+    id Int @id @default(autoincrement())
+    nome String @db.VarChar(20) 
     ano Int
     versao String @db.VarChar(20)
     combustivel Combustivel
@@ -32,7 +33,7 @@ model Modelo {
     portas Int?
     idMarca Marca @relation(fields: [id_marca], references: [id])
     id_marca String @unique
-    veiculo Veiculo []
+    anuncio Anuncio []
 
     @@map("modelo")
 }
@@ -53,19 +54,6 @@ enum Cambio {
     a 
     e 
 }
-model Veiculo {
-    id Int @id @default(autoincrement())
-    placa String @db.VarChar(7)
-    km Int
-    gnv Boolean
-    cor String @db.VarChar(20)
-    novo Boolean
-    id_modelo String @db.VarChar(20) 
-    modelo Modelo @relation(fields: [id_modelo], references: [nome])
-    anuncio Anuncio?
-
-    @@map("veiculo")
-}
 
 model Estado {
     uf String @id @db.VarChar(2)
@@ -80,7 +68,7 @@ model Cidade {
     nome String @db.VarChar(100)
     estado Estado @relation(fields: [id_estado], references: [uf])
     id_estado String @db.VarChar(2)
-    anuncio Anuncio?
+    anuncio Anuncio []
 
     @@map("cidade")
 }
@@ -104,10 +92,9 @@ enum Tipo {
 }
 
 model Anuncio {
-    id_veiculo Int @unique
+    id Int @id @default(autoincrement())
     id_usuario String
-    id_cidade Int  @unique
-    veiculo Veiculo @relation(fields: [id_veiculo], references: [id])
+    id_cidade Int
     usuario Usuario @relation(fields: [id_usuario], references: [cpf])
     cidade Cidade @relation(fields: [id_cidade], references: [id])
 
@@ -118,18 +105,24 @@ model Anuncio {
     aprovado Boolean @default(false)
     compra InteresseCompra[]
     foto String @unique
-    
-    telefone_ddd String
-    telefone_numero String
 
-    @@id ([id_veiculo,id_cidade,id_usuario])
+    placa String @db.VarChar(7)
+    km Int
+    gnv Boolean
+    cor String @db.VarChar(20)
+    novo Boolean
+    id_modelo Int
+    modelo Modelo @relation(fields: [id_modelo], references: [id])
+
     @@map("anuncio")
 }
 
 model InteresseCompra {
-    id_veiculo Int @id
+    id_anuncio Int
     cpf_interessado String @db.VarChar(11)
     interessado Usuario @relation(fields: [cpf_interessado], references: [cpf])
-    anuncioVeiculo Anuncio @relation(fields: [id_veiculo], references: [id_veiculo])
+    anuncio Anuncio @relation(fields: [id_anuncio], references: [id])
+
+    @@id([id_anuncio, cpf_interessado])
     @@map("interesse_compra")
 }
